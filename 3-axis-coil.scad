@@ -22,6 +22,7 @@ module plate() {
     half(true);
     translate([diameter + 5, 0, 0]) half(false);
     translate([0, (diameter + handle_diameter) / 2 + 5, 0]) handle();
+    translate([-diameter - 5, 0, 0]) junction_box();
 }
 
 module handle() {
@@ -38,6 +39,15 @@ module handle() {
     }
 }
 
+module handle_hole(h, taper_1, taper_2, center=false) {
+    cylinder(
+        d1=taper_1 ? handle_socket_taper_small : handle_socket_taper_large,
+        d2=taper_2 ? handle_socket_taper_small : handle_socket_taper_large,
+        h=h,
+        $fn=handle_facets,
+        center=center);
+}
+
 module half(is_top_half) {
     difference() {
         rotate([0, 0, is_top_half ? 0 : 180])  // align coil slots given handle hole
@@ -50,11 +60,7 @@ module half(is_top_half) {
         // punch hole for handle
         translate([0, 0, -epsilon])
         rotate([0, 0, -30])
-        cylinder(
-            d1=handle_socket_taper_large,
-            d2=is_top_half ? handle_socket_taper_small : handle_socket_taper_large,
-            h=diameter / 2 + epsilon * 2,
-            $fn=handle_facets);
+        handle_hole(diameter / 2 + epsilon * 2, false, is_top_half);
     }
 }
 
@@ -98,4 +104,17 @@ module coil_slot_and_entry(include_entry) {
 
 module top_half_enclosing() {
     cylinder(d=diameter * 2, h=diameter, $fn=4);
+}
+
+module junction_box() {
+    box_height = handle_diameter;
+    
+    translate([0, 0, box_height / 2])
+    difference() {
+        cube([30, 30, box_height], center=true);
+        
+        translate([0, 0, -cos(60) * handle_diameter / 4])
+        rotate([0, -90, 0])
+        handle_hole(31, true, false);
+    }
 }
