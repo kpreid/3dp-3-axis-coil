@@ -16,7 +16,8 @@ handle_socket_taper_large = handle_diameter + 0.4;
 handle_socket_taper_small = handle_diameter;
 handle_shaft_length = handle_middle_length + diameter * 0.75;
 
-plate();
+//plate();
+junction_box();
 
 module plate() {
     half(true);
@@ -107,11 +108,32 @@ module top_half_enclosing() {
 }
 
 module junction_box() {
-    box_height = handle_diameter;
+    // coordinates: length/x, width/y, height/z
+    // jack drawing: Kycon STPX-3501-3C-1 https://www.mouser.com/datasheet/2/222/Kycon_01262018_STPX-3501-3C-1-1283208.pdf
+    box_side_wall = 0.95;
+    jack_unit_spacing = 10.5 /* datasheet body size, shield terminal removed */ + 1 /* fudge */;
+    jack_depth = 9 + 5.60 /* from datasheet */;
+    jack_panel_hole = 6;
+    jack_count = 3;
+    width_margin = 1;
+    length_margin = 10;
+    box_interior_width = (jack_unit_spacing + width_margin) * jack_count + width_margin;
+    box_interior_length = jack_depth + length_margin;
+    box_exterior_width = box_interior_width + box_side_wall * 2;
+    box_exterior_length = box_interior_length + box_side_wall * 2;
+    box_height = 12;  // not bothering to calculate minimum
     
     translate([0, 0, box_height / 2])
     difference() {
-        cube([30, 30, box_height], center=true);
+        cube([box_exterior_length, box_exterior_width, box_height], center=true);
+        cube([box_interior_length, box_interior_width, box_height + epsilon], center=true);
+        
+        // jack holes
+        for (i = [-1:1]) {
+            translate([0, i * jack_unit_spacing, 0])
+            rotate([0, 90, 0])
+            cylinder(d=jack_panel_hole, h=box_side_wall * 3, $fn=20);
+        }
         
         translate([0, 0, -cos(60) * handle_diameter / 4])
         rotate([0, -90, 0])
