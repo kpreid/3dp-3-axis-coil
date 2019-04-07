@@ -2,12 +2,16 @@ diameter = 40;
 slot_width = 3;
 slot_depth = 3;
 sphere_resolution = 120;
-handle_hole_diameter = 10;
+handle_diameter = 10;
+handle_facets = 3;
 
 epsilon = 0.01;
 facet_epsilon = 10;
 bigger = 100;
 corner_angle = asin(1/sqrt(3));
+
+handle_socket_taper_large = handle_diameter + 0.4;
+handle_socket_taper_small = handle_diameter;
 
 
 half();
@@ -23,7 +27,8 @@ module half() {
         
         // punch hole for handle
         translate([0, 0, -epsilon])
-        cylinder(d=handle_hole_diameter, h=diameter, $fn=sphere_resolution);
+        rotate([0, 0, 30])
+        cylinder(d1=handle_socket_taper_large, d2=handle_socket_taper_small, h=diameter / 2 + epsilon * 2, $fn=handle_facets);
     }
 }
 
@@ -50,6 +55,7 @@ module coil_slot_and_entry() {
     rotate([90 - corner_angle, 0, 0])
     coil_slot();
     
+    render()  // faster preview
     intersection() {
         // perpendicular slot
         rotate([0, 90, 0]) coil_slot();
