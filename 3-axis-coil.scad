@@ -117,6 +117,7 @@ module junction_box() {
     jack_count = 3;
     width_margin = 1;
     length_margin = 10;
+    shell_taper_length = 20;
     box_interior_width = (jack_unit_spacing + width_margin) * jack_count + width_margin;
     box_interior_length = jack_depth + length_margin;
     box_exterior_width = box_interior_width + box_side_wall * 2;
@@ -125,18 +126,38 @@ module junction_box() {
     
     translate([0, 0, box_height / 2])
     difference() {
-        cube([box_exterior_length, box_exterior_width, box_height], center=true);
-        cube([box_interior_length, box_interior_width, box_height + epsilon], center=true);
+        minkowski() {
+            sphere(r=box_side_wall, $fn=8);
+            
+            hull() {
+                jack_volume_form();
+                
+                translate([box_interior_length + shell_taper_length, 0, 0])
+                rotate([0, 90, 0])
+                cylinder(d=handle_diameter, h=epsilon);
+            }
+        }
+        
+        jack_volume_form();
+        
+        // cut off top TEMPORARY FOR DEVELOPMENT we need a real panel eventually
+        translate([0, 0, 10]) jack_volume_form();
         
         // jack holes
         for (i = [-1:1]) {
-            translate([0, i * jack_unit_spacing, 0])
-            rotate([0, 90, 0])
+            translate([epsilon, i * jack_unit_spacing, 0])
+            rotate([0, -90, 0])
             cylinder(d=jack_panel_hole, h=box_side_wall * 3, $fn=20);
         }
         
-        translate([0, 0, -cos(60) * handle_diameter / 4])
+        translate([box_interior_length - epsilon, 0, 0])
+        mirror([1, 0, 0])
         rotate([0, -90, 0])
-        handle_hole(31, true, false);
+        handle_hole(shell_taper_length + box_side_wall + epsilon, true, false);
+    }
+    
+    module jack_volume_form() {
+        translate([0, -box_interior_width / 2, -box_height / 2])
+        cube([box_interior_length, box_interior_width, box_height]);
     }
 }
