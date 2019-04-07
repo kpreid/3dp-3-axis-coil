@@ -16,14 +16,14 @@ handle_socket_taper_large = handle_diameter + 0.4;
 handle_socket_taper_small = handle_diameter;
 handle_shaft_length = handle_middle_length + diameter * 0.75;
 
-//plate();
-junction_box();
+plate();
+//junction_box();
 
 module plate() {
     half(true);
     translate([diameter + 5, 0, 0]) half(false);
     translate([0, (diameter + handle_diameter) / 2 + 5, 0]) handle();
-    translate([-diameter - 5, 0, 0]) junction_box();
+    translate([-diameter - 5, 0, 0]) rotate([0, 0, 180]) junction_box();
 }
 
 module handle() {
@@ -132,9 +132,9 @@ module junction_box() {
             hull() {
                 jack_volume_form();
                 
+
                 translate([box_interior_length + shell_taper_length, 0, 0])
-                rotate([0, 90, 0])
-                cylinder(d=handle_diameter, h=epsilon);
+                cube([epsilon, box_height, box_height], center=true);
             }
         }
         
