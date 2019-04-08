@@ -124,7 +124,7 @@ module junction_box() {
     box_exterior_length = box_interior_length + box_side_wall * 2;
     box_height = 12;  // not bothering to calculate minimum
     
-    translate([0, 0, box_height / 2])
+    translate([0, 0, box_height / 2 + box_side_wall])
     difference() {
         minkowski() {
             sphere(r=box_side_wall, $fn=8);
