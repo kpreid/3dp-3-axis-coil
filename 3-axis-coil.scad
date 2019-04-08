@@ -1,6 +1,6 @@
 diameter = 40;
 slot_width = 3;
-slot_depth = 3;
+slot_depth = 1.5;
 sphere_resolution = 120;
 handle_diameter = 10;
 handle_wall = 1;
@@ -98,7 +98,7 @@ module coil_slot() {
     linear_extrude(slot_width, center=true, $fn=sphere_resolution, convexity=3)
     difference() {
         circle(d=diameter + facet_epsilon);
-        circle(d=diameter - slot_depth);
+        circle(d=diameter - slot_depth * 2);
     }
 }
 
