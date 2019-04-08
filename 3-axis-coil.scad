@@ -7,6 +7,23 @@ handle_wall = 1;
 handle_facets = 3;
 handle_middle_length = 100;
 
+// jack drawing: Kycon STPX-3501-3C-1 https://www.mouser.com/datasheet/2/222/Kycon_01262018_STPX-3501-3C-1-1283208.pdf
+box_side_wall = 0.95;
+jack_unit_spacing = 10.5 /* datasheet body size, shield terminal removed */ + 1 /* fudge */;
+jack_depth = 9 + 5.60 /* from datasheet */;
+jack_panel_hole = 6;
+jack_count = 3;
+width_margin = 1;
+length_margin = 10;
+shell_taper_length = 20;
+box_interior_width = (jack_unit_spacing + width_margin) * jack_count + width_margin;
+box_interior_length = jack_depth + length_margin;
+box_exterior_width = box_interior_width + box_side_wall * 2;
+box_exterior_length = box_interior_length + box_side_wall * 2;
+box_height = 12;  // not bothering to calculate minimum. TODO: rename to box_interior_height
+
+plate_spacing = 5;
+
 epsilon = 0.01;
 facet_epsilon = 10;
 bigger = 100;
@@ -21,9 +38,10 @@ plate();
 
 module plate() {
     half(true);
-    translate([diameter + 5, 0, 0]) half(false);
-    translate([0, (diameter + handle_diameter) / 2 + 5, 0]) handle();
-    translate([-diameter - 5, 0, 0]) rotate([0, 0, 180]) junction_box();
+    translate([diameter + plate_spacing, 0, 0]) half(false);
+    translate([0, (diameter + handle_diameter) / 2 + plate_spacing, 0]) handle();
+    translate([-diameter / 2 - plate_spacing, 0, 0]) rotate([0, 0, 180]) junction_box();
+    translate([0, -(diameter / 2 + box_exterior_width) - plate_spacing, 0]) junction_box_cover();
 }
 
 module handle() {
@@ -109,20 +127,6 @@ module top_half_enclosing() {
 
 module junction_box() {
     // coordinates: length/x, width/y, height/z
-    // jack drawing: Kycon STPX-3501-3C-1 https://www.mouser.com/datasheet/2/222/Kycon_01262018_STPX-3501-3C-1-1283208.pdf
-    box_side_wall = 0.95;
-    jack_unit_spacing = 10.5 /* datasheet body size, shield terminal removed */ + 1 /* fudge */;
-    jack_depth = 9 + 5.60 /* from datasheet */;
-    jack_panel_hole = 6;
-    jack_count = 3;
-    width_margin = 1;
-    length_margin = 10;
-    shell_taper_length = 20;
-    box_interior_width = (jack_unit_spacing + width_margin) * jack_count + width_margin;
-    box_interior_length = jack_depth + length_margin;
-    box_exterior_width = box_interior_width + box_side_wall * 2;
-    box_exterior_length = box_interior_length + box_side_wall * 2;
-    box_height = 12;  // not bothering to calculate minimum
     
     translate([0, 0, box_height / 2 + box_side_wall])
     difference() {
@@ -155,9 +159,29 @@ module junction_box() {
         rotate([0, -90, 0])
         handle_hole(shell_taper_length + box_side_wall + epsilon, true, false);
     }
+}
+
+module junction_box_cover() {
+    jack_distance_to_top = 2.3;  // necessarily fudgey; too big is better than too small
     
-    module jack_volume_form() {
-        translate([0, -box_interior_width / 2, -box_height / 2])
-        cube([box_interior_length, box_interior_width, box_height]);
+    cube([box_interior_length, box_interior_width, jack_distance_to_top]);
+    linear_extrude(box_height) {
+        corner_peg();
+        translate([0, box_interior_width, 0]) mirror([0, 1, 0]) corner_peg();
     }
+    
+    module corner_peg() {
+        polygon([
+            [0, 0],
+            [5, 0],
+            [2, 2],
+            [0, 5],
+        ]);
+    }
+}
+
+    
+module jack_volume_form() {
+    translate([0, -box_interior_width / 2, -box_height / 2])
+    cube([box_interior_length, box_interior_width, box_height]);
 }
