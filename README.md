@@ -1,7 +1,11 @@
-This is a supporting frame for three perpendicular electromagnetic coils. This device may be useful for
+This is a supporting frame for three perpendicular electromagnetic coils as a handheld probe. This device may be useful for
 
 * detecting/measuring electromagnetic interference (EMI/RFI)
 * electroacoustic music
+
+The different orientations of the coils mean that a field of any polarization will be picked up by at least one of the coils. (Note that this is no longer the case if you then sum/mix the output signals because there can then be phase cancellations.) For sound-related purposes, they also allow for collecting multiple timbres and stereo effects.
+
+Quick demo: [picking up noise from a cordless screwdriver.](https://www.youtube.com/watch?v=7gR-ICs26C8)
 
 ## Required materials
 
