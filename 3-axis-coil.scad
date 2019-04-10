@@ -165,7 +165,7 @@ module junction_box_cover() {
     jack_distance_to_top = 2.3;  // necessarily fudgey; too big is better than too small
     
     cube([box_interior_length, box_interior_width, jack_distance_to_top]);
-    linear_extrude(box_height) {
+    linear_extrude(box_height + box_side_wall) {
         corner_peg();
         translate([0, box_interior_width, 0]) mirror([0, 1, 0]) corner_peg();
     }
