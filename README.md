@@ -40,6 +40,7 @@ This is the first version. If I were revising it, I would consider:
 9. Solder the wire pairs to the jacks.
 
     I used TRS ('stereo') 3.5mm jacks and wired the coils to the tip and ring contacts. This pinout is appropriate if you are expecting to connect to a balanced microphone input, and will also work with an unbalanced TS cable. If you might be using a TRS stereo plug or similar, it would be more appropriate to wire to tip and sleeve.
+10. Press on the cover. If it is not a snug fit, glue it or wrap tape (add a comfy grip!) around the entire box.
 
 ## License
 
